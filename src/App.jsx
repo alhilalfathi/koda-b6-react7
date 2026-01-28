@@ -1,20 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { RiDeleteBin2Line } from "react-icons/ri";
 
 const TaskCard = (props) => {
- 
+  const labelRefs = useRef({})
+
+  function handleCheck(id, e) {
+    const label = labelRefs.current[id]
+
+    if (!label) return
+
+    if (e.target.checked) {
+      label.classList.add("line-through", "text-green-400")
+    } else {
+      label.classList.remove("line-through", "text-green-400")
+    }
+  }
+
   return (
     props.task.map((data)=>(
-      <div key={data.id} className="flex mt-3 px-5 py-2 border border-[#bdb7b7] border-x-white justify-between items-center ">
+      
+        <div key={data.id} className="flex mt-3 px-5 py-2 border border-[#bdb7b7] border-x-white justify-between items-center ">
       <div className="flex gap-3">
-        <input type="checkbox" name="taskname" id={data.id} className="cursor-pointer" />
-        <label htmlFor="taskid">{data.task}</label>
+        <input onChange={(e)=> handleCheck(data.id, e)} type="checkbox" className="cursor-pointer" />
+        <label ref={(el)=>(labelRefs.current[data.id] = el)} htmlFor={data.id} className="">{data.task}</label>
       </div>
       <div className="bg-[#8b8e8f] rounded-full p-2 cursor-pointer">
         <RiDeleteBin2Line  />
       </div>
-    </div>
+      </div>
     ))
     
   )
