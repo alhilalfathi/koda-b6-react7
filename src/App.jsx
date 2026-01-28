@@ -2,20 +2,14 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { RiDeleteBin2Line } from "react-icons/ri";
 
-const TaskCard = () => {
-  const [task, setTask] = useState([])
-
-  useEffect(()=>{
-    const savedTask = JSON.parse(localStorage.getItem("todoApps")) || []
-    setTask(savedTask) 
-  },[])
-
+const TaskCard = (props) => {
+ 
   return (
-    task.map((task)=>(
-      <div className="flex mt-3 px-5 py-2 border border-[#bdb7b7] border-x-white justify-between items-center ">
+    props.task.map((data)=>(
+      <div key={data.id} className="flex mt-3 px-5 py-2 border border-[#bdb7b7] border-x-white justify-between items-center ">
       <div className="flex gap-3">
-        <input type="checkbox" name="taskname" id={task.id} className="cursor-pointer" />
-        <label htmlFor="taskid">{task.task}</label>
+        <input type="checkbox" name="taskname" id={data.id} className="cursor-pointer" />
+        <label htmlFor="taskid">{data.task}</label>
       </div>
       <div className="bg-[#8b8e8f] rounded-full p-2 cursor-pointer">
         <RiDeleteBin2Line  />
@@ -27,18 +21,25 @@ const TaskCard = () => {
 }
 
 export const App = () => {
-  const {handleSubmit, register} = useForm()
+  const {handleSubmit, register, reset} = useForm()
+  const [todo, setTodo] = useState([])
+
+  useEffect(() => {
+    const savedTask = JSON.parse(localStorage.getItem("todoApps")) || []
+    setTodo(savedTask)
+  }, [])
 
   function addTask(value) {
-    const savedTask = JSON.parse(localStorage.getItem("todoApps")) || []
-    const task = {
-      id: savedTask.length + 1,
-      task: value.task
+    const newTask = {
+      id: todo.length +1,
+      task: value.task,
     }
 
-    savedTask.push(task)
+    const updatedTasks = [...todo, newTask]
+    setTodo(updatedTasks)
+    localStorage.setItem("todoApps", JSON.stringify(updatedTasks))
 
-    localStorage.setItem("todoApps",JSON.stringify(savedTask))
+    reset() 
   }
 
   return (
@@ -65,7 +66,7 @@ export const App = () => {
         </div>
 
         {/* task card  */}
-        <TaskCard />
+        <TaskCard task={todo} />
 
       </div>
     </div>
